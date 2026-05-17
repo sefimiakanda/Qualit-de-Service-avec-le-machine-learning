@@ -2,53 +2,270 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Prédiction QoS Télécom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction QoS Télécom — Dashboard AI</title>
+    <!-- Intégration d'une police moderne et d'icônes -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: Arial, sans-serif; margin: 50px; background-color: #f4f4f9; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px gray; max-width: 400px; margin: auto; }
-        input, select, button { display: block; width: 100%; margin: 10px 0; padding: 10px; box-sizing: border-box; }
-        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #218838; }
-        #resultat { margin-top: 20px; font-weight: bold; text-align: center; font-size: 1.2em; color: blue; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #06b6d4;
+            --background: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(15, 23, 42, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--background) 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            max-width: 650px;
+            width: 100%;
+        }
+
+        /* En-tête puissant */
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header .badge {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 12px;
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Organisation du formulaire en grille */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Permet à certains champs d'occuper toute la largeur si besoin */
+        .full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 500px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label i {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        input {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        input::placeholder {
+            color: #475569;
+        }
+
+        /* Bouton d'action */
+        button {
+            background: linear-gradient(90deg, var(--primary) 0%, #581c87 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Zone de résultat stylisée */
+        #resultat {
+            margin-top: 25px;
+            padding: 0px;
+            border-radius: 14px;
+            transition: all 0.4s ease;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Classes dynamiques injectées par le script pour le résultat */
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            padding: 18px !important;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.05);
+        }
+
+        .error-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 18px !important;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Test de Qualité Réseau</h2>
+    <div class="header">
+        <span class="badge">Predictive Analytics</span>
+        <h2>Test de Qualité Réseau</h2>
+        <p class="subtitle">Estimez instantanément la QoS grâce à l'intelligence artificielle</p>
+    </div>
     
-    <label>Opérateur:</label>
-    <input type="text" id="Opérateur" placeholder="Ex: Orange, Vodacom...">
+    <div class="form-grid">
+        <div class="form-group">
+            <label><i class="fa-solid fa-tower-cell"></i> Opérateur</label>
+            <input type="text" id="Opérateur" placeholder="Ex: Orange, Vodacom...">
+        </div>
 
-    <label>Quartier:</label>
-    <input type="text" id="Quartier" placeholder="Ex: Gombe, Limete...">
+        <div class="form-group">
+            <label><i class="fa-solid fa-map-location-dot"></i> Quartier</label>
+            <input type="text" id="Quartier" placeholder="Ex: Gombe, Limete...">
+        </div>
 
-    <label>Type Réseau:</label>
-    <input type="text" id="Type réseau" placeholder="Ex: 3G, 4G...">
+        <div class="form-group full-width">
+            <label><i class="fa-solid fa-wifi"></i> Type Réseau</label>
+            <input type="text" id="Type réseau" placeholder="Ex: 3G, 4G, 5G...">
+        </div>
 
-    <label>Download (Mbps):</label>
-    <input type="number" id="Download (Mbps)" value="15">
+        <div class="form-group">
+            <label><i class="fa-solid fa-download"></i> Download (Mbps)</label>
+            <input type="number" id="Download (Mbps)" value="15" step="any">
+        </div>
 
-    <label>Upload (Mbps):</label>
-    <input type="number" id="Upload (Mbps)" value="5">
+        <div class="form-group">
+            <label><i class="fa-solid fa-upload"></i> Upload (Mbps)</label>
+            <input type="number" id="Upload (Mbps)" value="5" step="any">
+        </div>
 
-    <label>Latence (ms):</label>
-    <input type="number" id="Latence (ms)" value="50">
+        <div class="form-group">
+            <label><i class="fa-solid fa-stopwatch"></i> Latence (ms)</label>
+            <input type="number" id="Latence (ms)" value="50" step="any">
+        </div>
 
-    <label>Jitter (ms):</label>
-    <input type="number" id="Jitter (ms)" value="10">
+        <div class="form-group">
+            <label><i class="fa-solid fa-bolt"></i> Jitter (ms)</label>
+            <input type="number" id="Jitter (ms)" value="10" step="any">
+        </div>
 
-    <label>Loss (%):</label>
-    <input type="number" id="Loss (%)" value="1">
+        <div class="form-group full-width">
+            <label><i class="fa-solid fa-chart-pie"></i> Paquets Perdus / Loss (%)</label>
+            <input type="number" id="Loss (%)" value="1" step="any">
+        </div>
+    </div>
 
-    <button onclick="fairePrediction()">Prédire la Qualité</button>
+    <button onclick="fairePrediction()">
+        <i class="fa-solid fa-brain"></i> Prédire la Qualité
+    </button>
 
     <div id="resultat"></div>
 </div>
 
 <script>
     function fairePrediction() {
-        // Récupérer les valeurs du formulaire
+        const btn = document.querySelector('button');
+        const resultatDiv = document.getElementById("resultat");
+        
+        // Effet de chargement visuel sur le bouton
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyse en cours...';
+        btn.style.pointerEvents = 'none';
+
         const data = {
             "Opérateur": document.getElementById("Opérateur").value,
             "Quartier": document.getElementById("Quartier").value,
@@ -60,7 +277,6 @@
             "Loss (%)": parseFloat(document.getElementById("Loss (%)").value)
         };
 
-        // Envoyer à l'API Flask
         fetch('/predict', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -68,11 +284,23 @@
         })
         .then(response => response.json())
         .then(data => {
+            // Remettre le bouton à son état initial
+            btn.innerHTML = '<i class="fa-solid fa-brain"></i> Prédire la Qualité';
+            btn.style.pointerEvents = 'auto';
+
             if(data.prediction) {
-                document.getElementById("resultat").innerText = "Qualité prédite : " + data.prediction;
+                resultatDiv.className = "success-box";
+                resultatDiv.innerHTML = `<i class="fa-solid fa-square-poll-horizontal"></i> Qualité prédite : <strong>${data.prediction}</strong>`;
             } else {
-                document.getElementById("resultat").innerText = "Erreur : " + data.erreur;
+                resultatDiv.className = "error-box";
+                resultatDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Erreur : ${data.erreur}`;
             }
+        })
+        .catch(err => {
+            btn.innerHTML = '<i class="fa-solid fa-brain"></i> Prédire la Qualité';
+            btn.style.pointerEvents = 'auto';
+            resultatDiv.className = "error-box";
+            resultatDiv.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Impossible de joindre l'API Flask.`;
         });
     }
 </script>
