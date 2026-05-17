@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Prédiction QoS Télécom</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; background-color: #f4f4f9; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px gray; max-width: 400px; margin: auto; }
+        input, select, button { display: block; width: 100%; margin: 10px 0; padding: 10px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        #resultat { margin-top: 20px; font-weight: bold; text-align: center; font-size: 1.2em; color: blue; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Test de Qualité Réseau</h2>
+    
+    <label>Opérateur:</label>
+    <input type="text" id="Opérateur" placeholder="Ex: Orange, Vodacom...">
+
+    <label>Quartier:</label>
+    <input type="text" id="Quartier" placeholder="Ex: Gombe, Limete...">
+
+    <label>Type Réseau:</label>
+    <input type="text" id="Type réseau" placeholder="Ex: 3G, 4G...">
+
+    <label>Download (Mbps):</label>
+    <input type="number" id="Download (Mbps)" value="15">
+
+    <label>Upload (Mbps):</label>
+    <input type="number" id="Upload (Mbps)" value="5">
+
+    <label>Latence (ms):</label>
+    <input type="number" id="Latence (ms)" value="50">
+
+    <label>Jitter (ms):</label>
+    <input type="number" id="Jitter (ms)" value="10">
+
+    <label>Loss (%):</label>
+    <input type="number" id="Loss (%)" value="1">
+
+    <button onclick="fairePrediction()">Prédire la Qualité</button>
+
+    <div id="resultat"></div>
+</div>
+
+<script>
+    function fairePrediction() {
+        // Récupérer les valeurs du formulaire
+        const data = {
+            "Opérateur": document.getElementById("Opérateur").value,
+            "Quartier": document.getElementById("Quartier").value,
+            "Type réseau": document.getElementById("Type réseau").value,
+            "Download (Mbps)": parseFloat(document.getElementById("Download (Mbps)").value),
+            "Upload (Mbps)": parseFloat(document.getElementById("Upload (Mbps)").value),
+            "Latence (ms)": parseFloat(document.getElementById("Latence (ms)").value),
+            "Jitter (ms)": parseFloat(document.getElementById("Jitter (ms)").value),
+            "Loss (%)": parseFloat(document.getElementById("Loss (%)").value)
+        };
+
+        // Envoyer à l'API Flask
+        fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.prediction) {
+                document.getElementById("resultat").innerText = "Qualité prédite : " + data.prediction;
+            } else {
+                document.getElementById("resultat").innerText = "Erreur : " + data.erreur;
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
